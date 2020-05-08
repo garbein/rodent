@@ -6,74 +6,59 @@ use actix_web::web;
 use chrono::prelude::*;
 use serde_json;
 
-pub async fn create(pool: &web::Data<Pool>, form: &site_setting_form::Form) -> bool {
-    let id = site_setting::create(form, &pool).await;
-    if id == 0 {
-        false
-    } else {
-        true
-    }
+pub async fn create(pool: &web::Data<Pool>, form: &site_setting_form::Form) -> anyhow::Result<u64> {
+    site_setting::create(form, &pool).await
 }
 
 pub async fn update(
     pool: &web::Data<Pool>,
     c: &cache::Client,
     name: &str,
-    form: &site_setting_form::Form,
-) -> bool {
-    let update_ok = site_setting::update(name, &form, &pool).await;
-    if update_ok {
-        let key = format!("site_setting:{}", name);
-        let _ = cache::del(&c, &key).await;
-    }
-    update_ok
+    form: &site_setting_form::UpdateForm,
+) -> anyhow::Result<bool> {
+    site_setting::update(name, &form, &pool).await?;
+    let key = format!("site_setting:{}", name);
+    let _ = cache::del(&c, &key).await;
+    Ok(true)
 }
 
-pub async fn delete(pool: &web::Data<Pool>, c: &cache::Client, name: &str) -> bool {
-    let delete_ok = site_setting::delete(name, &pool).await;
-    if delete_ok {
-        let key = format!("site_setting:{}", name);
-        let _ = cache::del(&c, &key).await;
-    }
-    delete_ok
+pub async fn delete(pool: &web::Data<Pool>, c: &cache::Client, name: &str) -> anyhow::Result<bool> {
+    site_setting::delete(name, &pool).await?;
+    let key = format!("site_setting:{}", name);
+    let _ = cache::del(&c, &key).await;
+    Ok(true)
 }
 
 pub async fn detail(
     pool: &web::Data<Pool>,
     c: &cache::Client,
     name: &str,
-) -> Result<serde_json::Value, String> {
+) -> anyhow::Result<serde_json::Value> {
     let key = format!("site_setting:{}", name);
     let setting_cache = cache::get(&c, &key).await;
     if let Ok(setting_cache) = setting_cache {
-        if false && setting_cache.len() > 0 {
-            return match handle_setting(&setting_cache) {
-                Some(t) => Ok(t),
-                None => Err(String::from("not found")),
-            };
+        if setting_cache.len() > 0 {
+            return handle_setting(&setting_cache);
         }
     }
-    let setting = site_setting::get_by_name(name, &pool).await;
+    let setting = site_setting::get_by_name(name, &pool).await?;
     if setting.len() > 0 {
         let _ = cache::set(&c, &key, &setting).await;
         let _ = cache::expire(&c, &key, "86400").await;
-        return match handle_setting(&setting) {
-            Some(t) => Ok(t),
-            None => Err(String::from("not found")),
-        };
+        handle_setting(&setting)
     } else {
-        Err(String::from("not found"))
+        Err(anyhow::anyhow!("not found"))
     }
 }
 
-fn handle_setting(setting: &str) -> Option<serde_json::Value> {
-    let obj: serde_json::Value = serde_json::from_str(setting).unwrap();
+fn handle_setting(setting: &str) -> anyhow::Result<serde_json::Value> {
+    let obj: serde_json::Value = serde_json::from_str(setting)?;
     let name_start_time = obj["name_start_time"].as_str();
     let name_end_time = obj["name_end_time"].as_str();
     let st: i64 = match name_start_time {
         Some(t) => {
             if t.len() > 0 {
-                let dt = Local.datetime_from_str(t, "%Y-%m-%d %H:%M:%S").unwrap();
+                let dt = Local.datetime_from_str(t, "%Y-%m-%d %H:%M:%S")?;
                 dt.timestamp()
             } else {
                 0
@@ -84,7 +69,7 @@ fn handle_setting(setting: &str) -> Option<serde_json::Value> {
     let et: i64 = match name_end_time {
         Some(t) => {
             if t.len() > 0 {
-                let dt = Local.datetime_from_str(t, "%Y-%m-%d %H:%M:%S").unwrap();
+                let dt = Local.datetime_from_str(t, "%Y-%m-%d %H:%M:%S")?;
                 dt.timestamp()
             } else {
                 0
@@ -93,11 +78,8 @@ fn handle_setting(setting: &str) -> Option<serde_json::Value> {
         None => 0,
     };
     let t = Local::now().timestamp();
-    if st > 0 && t < st {
-        return None;
+    if (st > 0 && t < st) || (et > 0 && t > et) {
+        return Err(anyhow::anyhow!("setting not in validity"));
     }
-    if et > 0 && t > et {
-        return None;
-    }
-    Some(obj)
+    Ok(obj)
 }
