@@ -65,7 +65,7 @@ curl -X GET http://127.0.0.1:8415/settings/1 -w '\n'
 #### Response
 
 ```json
-{"code":0,"message":"","data":{"setting_name":"test","setting_title":"a setting title"}}
+{"code":0,"message":"","data":{"id":1,"name":"test","title":"a test title","content":"{\"setting_name\":\"test\",\"setting_title\":\"a setting title\"}","created_at":"2020-05-15 16:01:58","updated_at":""}}
 ```
 
 ### Update
@@ -112,4 +112,18 @@ curl -X GET 'http://127.0.0.1:8415/settings?page=1&size=20' -w '\n' \
 
 ```json
 {"code":0,"message":"","data":{"total":1,"rows":[{"id":1,"name":"test","title":"a test title","created_at":"2020-05-15 16:01:58","updated_at":""}]}}
+```
+
+### Frontend
+
+#### Request
+
+```shell
+curl -X GET http://127.0.0.1:8415/frontend/1 -w '\n' 
+```
+
+#### Response
+
+```json
+{"code":0,"message":"","data":{"setting_name":"test","setting_title":"a setting title"}}
 ```
