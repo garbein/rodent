@@ -37,6 +37,13 @@ pub async fn delete(pool: &web::Data<Pool>, c: &cache::Client, id: u64) -> anyho
     Ok(true)
 }
 
+pub async fn view(
+    pool: &web::Data<Pool>,
+    id: u64,
+) -> anyhow::Result<site_setting::Setting> {
+    site_setting::get_by_id(id, &pool).await
+}
+
 pub async fn detail(
     pool: &web::Data<Pool>,
     c: &cache::Client,
@@ -49,7 +56,7 @@ pub async fn detail(
             return handle_setting(&setting_cache);
         }
     }
-    let setting = site_setting::get_by_name(id, &pool).await?;
+    let setting = site_setting::get_content_by_id(id, &pool).await?;
     if setting.len() > 0 {
         let _ = cache::set(&c, &key, &setting).await;
         let _ = cache::expire(&c, &key, "86400").await;

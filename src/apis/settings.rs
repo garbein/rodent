@@ -83,12 +83,11 @@ pub async fn delete(
 }
 
 #[get("/settings/{id}")]
-pub async fn detail(
+pub async fn view(
     pool: web::Data<Pool>,
-    c: cache::Client,
     path: web::Path<DetailPath>,
 ) -> Result<HttpResponse, Error> {
-    let setting = site_setting::detail(&pool, &c, path.id).await;
+    let setting = site_setting::view(&pool, path.id).await;
     if let Ok(s) = setting {
         Ok(HttpResponse::Ok().json(ApiResponse::succues(s, "")))
     } else {

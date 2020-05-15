@@ -1,6 +1,6 @@
 [package]
 name = "rodent"
-version = "0.1.1"
+version = "0.2.1"
 authors = ["zhouyelin <zhouyelin@chelun.com>"]
 edition = "2018"
 

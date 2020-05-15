@@ -2,6 +2,7 @@ use actix_web::web;
 use crate::apis::{
     index::{index},
     settings,
+    frontend,
 };
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -11,5 +12,6 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     .service(settings::create)
     .service(settings::update)
     .service(settings::delete)
-    .service(settings::detail);
+    .service(settings::view)
+    .service(frontend::detail);
 }

@@ -9,6 +9,7 @@ pub struct Setting {
     pub id: u32,
     pub name: String,
     pub title: String,
+    pub content: String,
     pub created_at: String,
     pub updated_at: String,
 }
@@ -30,6 +31,7 @@ pub async fn get_all(pool: &Pool, page: u32, size: u32) -> anyhow::Result<(u64, 
             id: rec.id,
             name: rec.name,
             title: rec.title,
+            content: rec.content,
             created_at: if rec.ctime == 0 {
                 "".into()
             } else {
@@ -102,8 +104,37 @@ pub async fn delete(id: u64, pool: &Pool) -> anyhow::Result<bool> {
     Ok(true)
 }
 
-pub async fn get_by_name(id: u64, pool: &Pool) -> anyhow::Result<String> {
-    let rec = sqlx::query!(r#"SELECT content from site_setting where name = ?"#, id)
+pub async fn get_by_id(id: u64, pool: &Pool) -> anyhow::Result<Setting> {
+    let rec = sqlx::query!(r#"SELECT * from site_setting where id = ?"#, id)
+        .fetch_one(pool)
+        .await?;
+    let s = Setting {
+        id: rec.id,
+        name: rec.name,
+        title: rec.title,
+        content: rec.content,
+        created_at: if rec.ctime == 0 {
+            "".into()
+        } else {
+            Local
+                .timestamp(rec.ctime as i64, 0)
+                .format("%Y-%m-%d %H:%M:%S")
+                .to_string()
+        },
+        updated_at: if rec.mtime == 0 {
+            "".into()
+        } else {
+            Local
+                .timestamp(rec.mtime as i64, 0)
+                .format("%Y-%m-%d %H:%M:%S")
+                .to_string()
+        },
+    };
+    Ok(s)
+}
+
+pub async fn get_content_by_id(id: u64, pool: &Pool) -> anyhow::Result<String> {
+    let rec = sqlx::query!(r#"SELECT content from site_setting where id = ?"#, id)
         .fetch_one(pool)
         .await?;
     Ok(rec.content)
