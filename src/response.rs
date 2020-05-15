@@ -11,7 +11,7 @@ impl<T> ApiResponse<T> {
 
     pub fn error(message: &str, data: T) -> ApiResponse<T> {
         ApiResponse {
-            code: 0,
+            code: 1,
             message: message.into(),
             data,
         }
@@ -19,7 +19,7 @@ impl<T> ApiResponse<T> {
 
     pub fn succues(data: T, message: &str) -> ApiResponse<T> {
         ApiResponse {
-            code: 1,
+            code: 0,
             message: message.into(),
             data,
         }

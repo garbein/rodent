@@ -21,7 +21,7 @@ pub struct Pagination {
 #[derive(Serialize, Deserialize)]
 pub struct PaginationResult<T> {
     total: u64,
-    list: Vec<T>,
+    rows: Vec<T>,
 }
 
 #[get("/settings")]
@@ -33,7 +33,7 @@ pub async fn list(
     if let Ok(t) = res {
         let pr = PaginationResult {
             total: t.0,
-            list: t.1,
+            rows: t.1,
         };
         Ok(HttpResponse::Ok().json(ApiResponse::succues(pr, "")))
     } else {

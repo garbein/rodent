@@ -51,7 +51,7 @@ curl -X POST http://127.0.0.1:8415/settings -w '\n' \
 #### Response
 
 ```json
-{"code":1,"message":"","data":null}
+{"code":0,"message":"","data":null}
 ```
 
 ### Read
@@ -65,7 +65,7 @@ curl -X GET http://127.0.0.1:8415/settings/1 -w '\n'
 #### Response
 
 ```json
-{"code":1,"message":"","data":{"setting_name":"test","setting_title":"a setting title"}}
+{"code":0,"message":"","data":{"setting_name":"test","setting_title":"a setting title"}}
 ```
 
 ### Update
@@ -81,7 +81,7 @@ curl -X PUT http://127.0.0.1:8415/settings/1 -w '\n' \
 #### Response
 
 ```json
-{"code":1,"message":"","data":null}
+{"code":0,"message":"","data":null}
 ```
 
 ### Delete
@@ -96,7 +96,7 @@ curl -X DELETE http://127.0.0.1:8415/settings/1 -w '\n' \
 #### Response
 
 ```json
-{"code":1,"message":"","data":null}
+{"code":0,"message":"","data":null}
 ```
 
 ### List
@@ -111,5 +111,5 @@ curl -X GET 'http://127.0.0.1:8415/settings?page=1&size=20' -w '\n' \
 #### Response
 
 ```json
-{"code":1,"message":"","data":{"total":1,"list":[{"id":1,"name":"test","title":"a test title","created_at":"2020-05-15 16:01:58","updated_at":""}]}}
+{"code":0,"message":"","data":{"total":1,"rows":[{"id":1,"name":"test","title":"a test title","created_at":"2020-05-15 16:01:58","updated_at":""}]}}
 ```
