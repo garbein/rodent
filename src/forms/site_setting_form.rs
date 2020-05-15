@@ -14,6 +14,8 @@ pub struct Form {
 #[derive(Clone, Debug, Deserialize, Serialize, Validate)]
 pub struct UpdateForm {
     #[validate(length(min = 1, max = 32, message = "name length min 1 max 32"))]
+    pub name: String,
+    #[validate(length(min = 1, max = 32, message = "name length min 1 max 32"))]
     pub title: String,
     pub content: String,
 }

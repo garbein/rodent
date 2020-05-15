@@ -6,6 +6,14 @@ use actix_web::web;
 use chrono::prelude::*;
 use serde_json;
 
+pub async fn list(
+    pool: &web::Data<Pool>,
+    page: u32,
+    size: u32,
+) -> anyhow::Result<(u64, Vec<site_setting::Setting>)> {
+    site_setting::get_all(&pool, page, size).await
+}
+
 pub async fn create(pool: &web::Data<Pool>, form: &site_setting_form::Form) -> anyhow::Result<u64> {
     site_setting::create(form, &pool).await
 }
@@ -13,18 +21,18 @@ pub async fn create(pool: &web::Data<Pool>, form: &site_setting_form::Form) -> a
 pub async fn update(
     pool: &web::Data<Pool>,
     c: &cache::Client,
-    name: &str,
+    id: u64,
     form: &site_setting_form::UpdateForm,
 ) -> anyhow::Result<bool> {
-    site_setting::update(name, &form, &pool).await?;
-    let key = format!("site_setting:{}", name);
+    site_setting::update(id, &form, &pool).await?;
+    let key = format!("site_setting:{}", id);
     let _ = cache::del(&c, &key).await;
     Ok(true)
 }
 
-pub async fn delete(pool: &web::Data<Pool>, c: &cache::Client, name: &str) -> anyhow::Result<bool> {
-    site_setting::delete(name, &pool).await?;
-    let key = format!("site_setting:{}", name);
+pub async fn delete(pool: &web::Data<Pool>, c: &cache::Client, id: u64) -> anyhow::Result<bool> {
+    site_setting::delete(id, &pool).await?;
+    let key = format!("site_setting:{}", id);
     let _ = cache::del(&c, &key).await;
     Ok(true)
 }
@@ -32,16 +40,16 @@ pub async fn delete(pool: &web::Data<Pool>, c: &cache::Client, name: &str) -> an
 pub async fn detail(
     pool: &web::Data<Pool>,
     c: &cache::Client,
-    name: &str,
+    id: u64,
 ) -> anyhow::Result<serde_json::Value> {
-    let key = format!("site_setting:{}", name);
+    let key = format!("site_setting:{}", id);
     let setting_cache = cache::get(&c, &key).await;
     if let Ok(setting_cache) = setting_cache {
         if setting_cache.len() > 0 {
             return handle_setting(&setting_cache);
         }
     }
-    let setting = site_setting::get_by_name(name, &pool).await?;
+    let setting = site_setting::get_by_name(id, &pool).await?;
     if setting.len() > 0 {
         let _ = cache::set(&c, &key, &setting).await;
         let _ = cache::expire(&c, &key, "86400").await;

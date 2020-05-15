@@ -32,7 +32,7 @@ cargo run
 ### Is Running?
 
 ```shell
-curl -X GET http://127.0.0.1:8080 -w '\n'
+curl -X GET http://127.0.0.1:8415 -w '\n'
 ```
 #### Response
 
@@ -43,7 +43,7 @@ drop the world
 #### Request
 
 ```shell
-curl -X POST http://127.0.0.1:8080/frontend -w '\n' \
+curl -X POST http://127.0.0.1:8415/settings -w '\n' \
 -H 'Content-Type: application/json' \
 -d '{"name":"test","title":"a test title","content":"{\"setting_name\":\"test\",\"setting_title\":\"a setting title\"}"}' 
 ```
@@ -54,12 +54,12 @@ curl -X POST http://127.0.0.1:8080/frontend -w '\n' \
 {"code":1,"message":"","data":null}
 ```
 
-### GET
+### Read
 
 #### Request
 
 ```shell
-curl -X GET http://127.0.0.1:8080/frontend/test -w '\n' 
+curl -X GET http://127.0.0.1:8415/settings/1 -w '\n' 
 ```
 
 #### Response
@@ -73,7 +73,7 @@ curl -X GET http://127.0.0.1:8080/frontend/test -w '\n'
 #### Request
 
 ```shell
-curl -X PUT http://127.0.0.1:8080/frontend/test -w '\n' \
+curl -X PUT http://127.0.0.1:8415/settings/1 -w '\n' \
 -H 'Content-Type: application/json' \
 -d '{"name":"test","title":"a test title","content":"{\"setting_name\":\"test\",\"setting_title\":\"a setting title\"}"}' 
 ```
@@ -89,7 +89,7 @@ curl -X PUT http://127.0.0.1:8080/frontend/test -w '\n' \
 #### Request
 
 ```shell
-curl -X DELETE http://127.0.0.1:8080/frontend/test -w '\n' \
+curl -X DELETE http://127.0.0.1:8415/settings/1 -w '\n' \
 -H 'Content-Type: application/json' 
 ```
 
@@ -99,3 +99,17 @@ curl -X DELETE http://127.0.0.1:8080/frontend/test -w '\n' \
 {"code":1,"message":"","data":null}
 ```
 
+### List
+
+#### Request
+
+```shell
+curl -X GET 'http://127.0.0.1:8415/settings?page=1&size=20' -w '\n' \
+-H 'Content-Type: application/json' 
+```
+
+#### Response
+
+```json
+{"code":1,"message":"","data":{"total":1,"list":[{"id":1,"name":"test","title":"a test title","created_at":"2020-05-15 16:01:58","updated_at":""}]}}
+```
