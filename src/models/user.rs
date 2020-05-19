@@ -22,7 +22,7 @@ pub async fn get_by_email(pool: &Pool, email: &str) -> anyhow::Result<User> {
     Ok(user)
 }
 
-pub async fn create(pool: &Pool, form: &RegisterForm) -> anyhow::Result<u64> {
+pub async fn create(pool: &Pool, form: &RegisterForm) -> anyhow::Result<u32> {
     let time = Local::now().timestamp();
     sqlx::query!(
         r#"insert into user (name, email, password, ctime) values (?, ?, ?, ?)"#,
@@ -33,7 +33,7 @@ pub async fn create(pool: &Pool, form: &RegisterForm) -> anyhow::Result<u64> {
     )
     .execute(pool)
     .await?;
-    let last_id_rec: (u64, ) = sqlx::query_as("SELECT LAST_INSERT_ID()")
+    let last_id_rec: (u32, ) = sqlx::query_as("SELECT LAST_INSERT_ID()")
         .fetch_one(pool)
         .await?;
     Ok(last_id_rec.0)

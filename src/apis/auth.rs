@@ -13,7 +13,7 @@ pub async fn register(
     validate(&form)?;
     let res = user::register(&pool, &form).await;
     match res {
-        Ok(_) => Ok(HttpResponse::Ok().json(ApiResponse::succues(true, ""))),
+        Ok(t) => Ok(HttpResponse::Ok().json(ApiResponse::succues(t, ""))),
         Err(e) => Ok(HttpResponse::Ok().json(ApiResponse::error(&e.to_string(), ()))),
     }
 }
