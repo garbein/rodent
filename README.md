@@ -1,5 +1,9 @@
 # rodent
 
+## Demo
+
+- [http://49.232.102.172/](http://49.232.102.172/)
+
 ## Installation
 
 Clone the repo and cd into the repo:

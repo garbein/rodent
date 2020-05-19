@@ -21,6 +21,7 @@ mod services;
 mod forms;
 mod validates;
 mod errors;
+mod utils;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
