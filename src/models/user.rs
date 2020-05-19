@@ -2,13 +2,25 @@ use crate::db::Pool;
 use crate::forms::auth_form::RegisterForm;
 use chrono::prelude::*;
 use sqlx::mysql::MySqlQueryAs;
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct User {
     pub id: u32,
     pub name: String,
     pub email: String,
     pub password: String,
+}
+
+pub async fn get_by_id(pool: &Pool, id: u32) -> anyhow::Result<User> {
+    let user = sqlx::query_as!(
+        User,
+        r#"SELECT id, name, email, password from user where id = ? and deleted = 0"#,
+        id
+    )
+    .fetch_one(pool)
+    .await?;
+    Ok(user)
 }
 
 pub async fn get_by_email(pool: &Pool, email: &str) -> anyhow::Result<User> {

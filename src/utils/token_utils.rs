@@ -1,12 +1,14 @@
 use chrono::prelude::*;
 use chrono::Duration;
-use jsonwebtoken::{Header, EncodingKey};
+use jsonwebtoken::{Header, EncodingKey, DecodingKey};
 use rand::{thread_rng, RngCore};
 use serde::{Deserialize, Serialize};
+use actix_web::{HttpRequest};
+use crate::utils::constants;
 
 pub const SECRET_KEY: &str = "5432fin4303f00994qq0afgj44e400s";
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct TokenClaims {
     pub uid: u32,
     pub exp: i64,
@@ -35,4 +37,22 @@ pub fn generate_token(user_id: u32) -> anyhow::Result<String> {
         &EncodingKey::from_secret(SECRET_KEY.as_ref()),
     )?;
     Ok(token)
+}
+
+pub fn extract_token(req: &HttpRequest) -> Option<&str> {
+    if let Some(header) = req.headers().get(constants::AUTHORIZATION) {
+        if let Ok(authorization) = header.to_str() {
+            return Some(&authorization[7..authorization.len()]);
+        }
+    }
+    None
+}
+
+pub fn decode_token(token: &str) -> anyhow::Result<u32> {
+    let data = jsonwebtoken::decode::<TokenClaims>(
+        token,
+        &DecodingKey::from_secret(SECRET_KEY.as_ref()),
+        &jsonwebtoken::Validation::default(),
+    )?;
+    Ok(data.claims.uid)
 }

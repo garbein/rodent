@@ -4,6 +4,7 @@ use crate::apis::{
     settings,
     frontend,
     auth,
+    user,
 };
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -11,6 +12,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     .service(index)
     .service(auth::register)
     .service(auth::login)
+    .service(user::profile)
     .service(settings::list)
     .service(settings::create)
     .service(settings::update)

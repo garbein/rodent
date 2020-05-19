@@ -1,0 +1,2 @@
+
+pub const AUTHORIZATION: &str = "AUTHORIZATION";
