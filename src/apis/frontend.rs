@@ -7,7 +7,7 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct DetailPath {
-    id: u64,
+    id: i64,
 }
 
 #[get("/frontend/{id}")]

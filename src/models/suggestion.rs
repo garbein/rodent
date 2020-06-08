@@ -1,5 +1,5 @@
 use crate::db::Pool;
-use crate::forms::site_setting_form;
+use crate::forms::suggestion_form;
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -9,33 +9,39 @@ use sqlx::sqlite::SqliteQueryAs;
 use sqlx::mysql::MySqlQueryAs;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Setting {
+pub struct Suggestion {
     pub id: i32,
-    pub name: String,
-    pub title: String,
+    pub account: String,
+    pub user_avatar: String,
+    pub user_name: String,
+    pub emotion: String,
+    pub contact: String,
     pub content: String,
     pub created_at: String,
     pub updated_at: String,
 }
 
-pub async fn get_all(pool: &Pool, page: i32, size: i32) -> anyhow::Result<(i64, Vec<Setting>)> {
-    let (total,):(i64,) = sqlx::query_as("select count(*) as total from site_setting where deleted = 0")
+pub async fn get_all(pool: &Pool, page: i32, size: i32) -> anyhow::Result<(i64, Vec<Suggestion>)> {
+    let (total,):(i64,) = sqlx::query_as("select count(*) as total from suggestion where deleted = 0")
         .fetch_one(pool)
         .await?;
     let recs = sqlx::query!(
-        r#"select * from site_setting where deleted = 0 limit ? offset ?"#,
+        r#"select * from suggestion where deleted = 0 limit ? offset ?"#,
         size,
         (page - 1) * size
     )
     .fetch_all(pool)
     .await?;
-    let mut list: Vec<Setting> = Vec::new();
+    let mut list: Vec<Suggestion> = Vec::new();
     for rec in recs {
-        let s = Setting {
+        let s = Suggestion {
             id: rec.id,
-            name: rec.name,
-            title: rec.title,
+            account: rec.account,
+            user_avatar: rec.user_avatar,
+            user_name: rec.user_name,
+            emotion: rec.emotion,
             content: rec.content,
+            contact: rec.contact,
             created_at: if rec.created_at == 0 {
                 "".into()
             } else {
@@ -59,13 +65,16 @@ pub async fn get_all(pool: &Pool, page: i32, size: i32) -> anyhow::Result<(i64, 
     Ok((total as i64, list))
 }
 
-pub async fn create(form: &site_setting_form::Form, pool: &Pool) -> anyhow::Result<i64> {
+pub async fn create(form: &suggestion_form::Form, pool: &Pool) -> anyhow::Result<i64> {
     let time = Local::now().timestamp();
     sqlx::query!(
-        r#"insert into site_setting (name,title,content,status,created_at) values (?, ?, ?, ?, ?)"#,
-        form.name,
-        form.title,
+        r#"insert into suggestion (account,user_avatar,user_name,emotion,content,contact,status,created_at) values (?, ?, ?, ?, ?, ?, ?, ?)"#,
+        form.account,
+        form.user_avatar,
+        form.user_name,
+        form.emotion,
         form.content,
+        form.contact,
         1,
         time
     )
@@ -79,15 +88,15 @@ pub async fn create(form: &site_setting_form::Form, pool: &Pool) -> anyhow::Resu
 
 pub async fn update(
     id: i64,
-    form: &site_setting_form::UpdateForm,
+    form: &suggestion_form::UpdateForm,
     pool: &Pool,
 ) -> anyhow::Result<bool> {
     let time = Local::now().timestamp();
     sqlx::query!(
-        r#"update site_setting set name = ?, title = ?, content = ?, updated_at = ? where id = ?"#,
-        form.name,
-        form.title,
+        r#"update suggestion set emotion = ?, content = ?, contact = ?, updated_at = ? where id = ?"#,
+        form.emotion,
         form.content,
+        form.contact,
         time,
         id
     )
@@ -99,7 +108,7 @@ pub async fn update(
 pub async fn delete(id: i64, pool: &Pool) -> anyhow::Result<bool> {
     let time = Local::now().timestamp();
     sqlx::query!(
-        r#"update site_setting set deleted = 1, updated_at = ? where id = ?"#,
+        r#"update suggestion set deleted = 1, updated_at = ? where id = ?"#,
         time,
         id
     )
@@ -108,15 +117,18 @@ pub async fn delete(id: i64, pool: &Pool) -> anyhow::Result<bool> {
     Ok(true)
 }
 
-pub async fn get_by_id(id: i64, pool: &Pool) -> anyhow::Result<Setting> {
-    let rec = sqlx::query!(r#"SELECT * from site_setting where id = ?"#, id as i64)
+pub async fn get_by_id(id: i64, pool: &Pool) -> anyhow::Result<Suggestion> {
+    let rec = sqlx::query!(r#"SELECT * from suggestion where id = ?"#, id as i64)
         .fetch_one(pool)
         .await?;
-    let s = Setting {
+    let s = Suggestion {
         id: rec.id,
-        name: rec.name,
-        title: rec.title,
+        account: rec.account,
+        user_avatar: rec.user_avatar,
+        user_name: rec.user_name,
+        emotion: rec.emotion,
         content: rec.content,
+        contact: rec.contact,
         created_at: if rec.created_at == 0 {
             "".into()
         } else {
@@ -138,7 +150,7 @@ pub async fn get_by_id(id: i64, pool: &Pool) -> anyhow::Result<Setting> {
 }
 
 pub async fn get_content_by_id(id: i64, pool: &Pool) -> anyhow::Result<String> {
-    let rec = sqlx::query!(r#"SELECT content from site_setting where id = ?"#, id)
+    let rec = sqlx::query!(r#"SELECT content from suggestion where id = ?"#, id)
         .fetch_one(pool)
         .await?;
     Ok(rec.content)

@@ -25,10 +25,20 @@ Import sql/schema.sql to database
 mysql -uroot -p < sql/schema.sql
 ```
 
+Import sql/sqlite.sql to database
+```
+sqlite3 rodent.db
+sqlite> .read sql/sqlite.sql
+```
+
 Start the server:
 
 ```shell
 cargo run
+```
+use other db
+```
+cargo run --features="sqlite" --no-default-features
 ```
 
 ## Client

@@ -1,8 +1,8 @@
 use crate::cache;
 use crate::db::Pool;
-use crate::forms::site_setting_form;
+use crate::forms::suggestion_form;
 use crate::response::ApiResponse;
-use crate::services::site_setting;
+use crate::services::suggestion;
 use crate::validates::validate;
 use actix_web::{delete, get, post, put, web, Error, HttpResponse};
 use serde::{Deserialize, Serialize};
@@ -24,12 +24,12 @@ pub struct PaginationResult<T> {
     rows: Vec<T>,
 }
 
-#[get("/settings")]
+#[get("/suggestion")]
 pub async fn list(
     pool: web::Data<Pool>,
     pagination: web::Query<Pagination>,
 ) -> Result<HttpResponse, Error> {
-    let res = site_setting::list(&pool, pagination.page, pagination.size).await;
+    let res = suggestion::list(&pool, pagination.page, pagination.size).await;
     if let Ok(t) = res {
         let pr = PaginationResult {
             total: t.0,
@@ -41,53 +41,67 @@ pub async fn list(
     }
 }
 
-#[post("/settings")]
+#[post("/suggestion")]
 pub async fn create(
     pool: web::Data<Pool>,
-    form: web::Json<site_setting_form::Form>,
+    form: web::Json<suggestion_form::Form>,
 ) -> Result<HttpResponse, Error> {
     validate(&form)?;
-    let res = site_setting::create(&pool, &form).await;
+    let res = suggestion::create(&pool, &form).await;
     match res {
         Ok(_) => Ok(HttpResponse::Ok().json(ApiResponse::succues((), ""))),
         Err(e) => Ok(HttpResponse::Ok().json(ApiResponse::error(&e.to_string(), ()))),
     }
 }
 
-#[put("/settings/{id}")]
+#[put("/suggestion/{id}")]
 pub async fn update(
     pool: web::Data<Pool>,
     c: cache::Client,
     path: web::Path<DetailPath>,
-    form: web::Json<site_setting_form::UpdateForm>,
+    form: web::Json<suggestion_form::UpdateForm>,
 ) -> Result<HttpResponse, Error> {
     validate(&form)?;
-    let res = site_setting::update(&pool, &c, path.id, &form).await;
+    let res = suggestion::update(&pool, &c, path.id, &form).await;
     match res {
         Ok(_) => Ok(HttpResponse::Ok().json(ApiResponse::succues((), ""))),
         Err(e) => Ok(HttpResponse::Ok().json(ApiResponse::error(&e.to_string(), ()))),
     }
 }
 
-#[delete("/settings/{id}")]
+#[delete("/suggestion/{id}")]
 pub async fn delete(
     pool: web::Data<Pool>,
     c: cache::Client,
     path: web::Path<DetailPath>,
 ) -> Result<HttpResponse, Error> {
-    let res = site_setting::delete(&pool, &c, path.id).await;
+    let res = suggestion::delete(&pool, &c, path.id).await;
     match res {
         Ok(_) => Ok(HttpResponse::Ok().json(ApiResponse::succues((), ""))),
         Err(e) => Ok(HttpResponse::Ok().json(ApiResponse::error(&e.to_string(), ()))),
     }
 }
 
-#[get("/settings/{id}")]
+#[get("/suggestion/{id}")]
 pub async fn view(
     pool: web::Data<Pool>,
     path: web::Path<DetailPath>,
 ) -> Result<HttpResponse, Error> {
-    let setting = site_setting::view(&pool, path.id).await;
+    let setting = suggestion::view(&pool, path.id).await;
+    if let Ok(s) = setting {
+        Ok(HttpResponse::Ok().json(ApiResponse::succues(s, "")))
+    } else {
+        Ok(HttpResponse::Ok().json(ApiResponse::error("未查询到数据", ())))
+    }
+}
+
+#[get("/suggestion_detail/{id}")]
+pub async fn detail(
+    pool: web::Data<Pool>,
+    c: cache::Client,
+    path: web::Path<DetailPath>,
+) -> Result<HttpResponse, Error> {
+    let setting = suggestion::detail(&pool, &c, path.id).await;
     if let Ok(s) = setting {
         Ok(HttpResponse::Ok().json(ApiResponse::succues(s, "")))
     } else {

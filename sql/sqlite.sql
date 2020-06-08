@@ -1,0 +1,64 @@
+CREATE TABLE IF NOT EXISTS user (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL DEFAULT '',
+    avatar TEXT NOT NULL DEFAULT '',
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL DEFAULT '',
+    status TINYINT NOT NULL DEFAULT '0',
+    deleted TINYINT NOT NULL DEFAULT '0',
+
+    created_at INTEGER NOT NULL DEFAULT (STRFTIME('%s', 'now')),
+    updated_at INTEGER NOT NULL DEFAULT (STRFTIME('%s', 'now'))
+);
+
+CREATE VIEW profile AS
+SELECT ID, username, avatar, email
+FROM user;
+
+CREATE TABLE IF NOT EXISTS site_setting (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+
+    name TEXT NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    status TINYINT NOT NULL DEFAULT '0',
+    deleted TINYINT NOT NULL DEFAULT '0',
+
+    created_at INTEGER NOT NULL DEFAULT (STRFTIME('%s', 'now')),
+    updated_at INTEGER NOT NULL DEFAULT (STRFTIME('%s', 'now'))
+);
+CREATE INDEX idx_name ON site_setting (name);
+
+CREATE TABLE IF NOT EXISTS task (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  name VARCHAR(255) NOT NULL,
+  type TINYINT NOT NULL DEFAULT '0',
+  remark TEXT NOT NULL,
+  icon_bean TEXT NOT NULL,
+  detail_list TEXT NOT NULL,
+  detail_num INTEGER NOT NULL DEFAULT '0',
+  change_times INTEGER NOT NULL DEFAULT '0',
+  progress TINYINT NOT NULL DEFAULT '0',
+  status TINYINT NOT NULL DEFAULT '0',
+  start_at INTEGER NOT NULL DEFAULT '0',
+  end_at INTEGER NOT NULL DEFAULT '0',
+  finished_at INTEGER NOT NULL DEFAULT '0',
+  created_at INTEGER NOT NULL DEFAULT (STRFTIME('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (STRFTIME('%s', 'now')),
+  deleted TINYINT NOT NULL DEFAULT '0'
+);
+CREATE INDEX idx_task_name ON task (name);
+
+CREATE TABLE IF NOT EXISTS suggestion (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  account VARCHAR(255) NOT NULL,
+  user_avatar VARCHAR(128) NOT NULL,
+  user_name VARCHAR(128) NOT NULL,
+  emotion VARCHAR(64) NOT NULL,
+  contact VARCHAR(128) NOT NULL,
+  content TEXT NOT NULL,
+  status TINYINT NOT NULL DEFAULT '0',
+  created_at INTEGER NOT NULL DEFAULT (STRFTIME('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (STRFTIME('%s', 'now')),
+  deleted TINYINT NOT NULL DEFAULT '0'
+);

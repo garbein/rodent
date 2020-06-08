@@ -10,7 +10,7 @@ pub const SECRET_KEY: &str = "5432fin4303f00994qq0afgj44e400s";
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TokenClaims {
-    pub uid: u32,
+    pub uid: i32,
     pub exp: i64,
 }
 
@@ -26,7 +26,7 @@ fn generate_random_salt() -> [u8; 16] {
     salt
 }
 
-pub fn generate_token(user_id: u32) -> anyhow::Result<String> {
+pub fn generate_token(user_id: i32) -> anyhow::Result<String> {
     let exp = Local::now() + Duration::hours(24);
     let token = jsonwebtoken::encode(
         &Header::default(),
@@ -48,7 +48,7 @@ pub fn extract_token(req: &HttpRequest) -> Option<&str> {
     None
 }
 
-pub fn decode_token(token: &str) -> anyhow::Result<u32> {
+pub fn decode_token(token: &str) -> anyhow::Result<i32> {
     let data = jsonwebtoken::decode::<TokenClaims>(
         token,
         &DecodingKey::from_secret(SECRET_KEY.as_ref()),
