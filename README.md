@@ -13,9 +13,10 @@ git clone https://github.com/garbein/rodent.git
 cd rodent
 ```
 
-Edit the .env file:
+Rename .env.sample to .env and edit the .env file:
 
 ```shell
+mv .env.sample .env
 vim .env
 ```
 
