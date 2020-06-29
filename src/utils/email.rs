@@ -44,9 +44,9 @@ pub fn send_mail (
 }
 
 pub fn send_mail_simply(email_receiver: &str, content: &str){
-    let mine_email = "1604436636@qq.com";
+    let mine_email = "10000@qq.com";
     let smtp_server = "smtp.qq.com";
-    let password = "mafuqqfcdigagieb";
+    let password = "888888888888";
 
     let email = Email::builder()
         .to(email_receiver)
