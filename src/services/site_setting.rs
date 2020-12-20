@@ -1,3 +1,4 @@
+/// 配置服务
 use crate::cache;
 use crate::db::Pool;
 use crate::forms::site_setting_form;
@@ -6,6 +7,7 @@ use actix_web::web;
 use chrono::prelude::*;
 use serde_json;
 
+/// 列表
 pub async fn list(
     pool: &web::Data<Pool>,
     page: i32,
@@ -14,10 +16,12 @@ pub async fn list(
     site_setting::get_all(&pool, page, size).await
 }
 
+/// 创建
 pub async fn create(pool: &web::Data<Pool>, form: &site_setting_form::Form) -> anyhow::Result<i64> {
     site_setting::create(form, &pool).await
 }
 
+/// 更新
 pub async fn update(
     pool: &web::Data<Pool>,
     c: &cache::Client,
@@ -30,6 +34,7 @@ pub async fn update(
     Ok(true)
 }
 
+/// 删除
 pub async fn delete(pool: &web::Data<Pool>, c: &cache::Client, id: i64) -> anyhow::Result<bool> {
     site_setting::delete(id, &pool).await?;
     let key = format!("site_setting:{}", id);
@@ -37,6 +42,7 @@ pub async fn delete(pool: &web::Data<Pool>, c: &cache::Client, id: i64) -> anyho
     Ok(true)
 }
 
+/// 详情
 pub async fn view(
     pool: &web::Data<Pool>,
     id: i64,
@@ -44,6 +50,7 @@ pub async fn view(
     site_setting::get_by_id(id, &pool).await
 }
 
+/// 前端接口
 pub async fn detail(
     pool: &web::Data<Pool>,
     c: &cache::Client,
@@ -66,6 +73,8 @@ pub async fn detail(
     }
 }
 
+/// 处理配置
+/// 主要处理时间格式
 fn handle_setting(setting: &str) -> anyhow::Result<serde_json::Value> {
     let obj: serde_json::Value = serde_json::from_str(setting)?;
     let name_start_time = obj["name_start_time"].as_str();

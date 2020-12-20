@@ -23,6 +23,7 @@ mod validates;
 mod errors;
 mod utils;
 
+/// server入口
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     init_server().await

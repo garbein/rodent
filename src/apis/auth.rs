@@ -14,6 +14,7 @@ pub struct Account {
     mobile: String,
 }
 
+/// 用户注册
 #[post("/register")]
 pub async fn register(
     pool: web::Data<Pool>,
@@ -27,6 +28,7 @@ pub async fn register(
     }
 }
 
+/// 用户登录
 #[post("/login")]
 pub async fn login(
     pool: web::Data<Pool>,
@@ -40,6 +42,7 @@ pub async fn login(
     }
 }
 
+/// 发送邮件验证码
 #[get("/get_email_code")]
 pub async fn get_email_code(
     c: cache::Client,
@@ -52,6 +55,7 @@ pub async fn get_email_code(
     }
 }
 
+/// 发送短信验证码
 #[get("/get_sms_code")]
 pub async fn get_sms_code(
     c: cache::Client,
@@ -64,6 +68,7 @@ pub async fn get_sms_code(
     }
 }
 
+/// 验证验证码
 #[post("/check_code")]
 pub async fn check_code() -> impl Responder {
     "ok"

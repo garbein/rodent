@@ -12,18 +12,21 @@ pub struct DetailPath {
     id: i64,
 }
 
+/// 分页
 #[derive(Serialize, Deserialize)]
 pub struct Pagination {
     page: i32,
     size: i32,
 }
 
+/// 列表结果
 #[derive(Serialize, Deserialize)]
 pub struct PaginationResult<T> {
     total: i64,
     rows: Vec<T>,
 }
 
+/// 配置列表
 #[get("/settings")]
 pub async fn list(
     pool: web::Data<Pool>,
@@ -41,6 +44,7 @@ pub async fn list(
     }
 }
 
+/// 创建配置
 #[post("/settings")]
 pub async fn create(
     pool: web::Data<Pool>,
@@ -54,6 +58,7 @@ pub async fn create(
     }
 }
 
+/// 更新配置
 #[put("/settings/{id}")]
 pub async fn update(
     pool: web::Data<Pool>,
@@ -69,6 +74,7 @@ pub async fn update(
     }
 }
 
+/// 删除配置
 #[delete("/settings/{id}")]
 pub async fn delete(
     pool: web::Data<Pool>,
@@ -82,6 +88,7 @@ pub async fn delete(
     }
 }
 
+/// 配置详情
 #[get("/settings/{id}")]
 pub async fn view(
     pool: web::Data<Pool>,

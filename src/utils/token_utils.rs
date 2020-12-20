@@ -1,3 +1,4 @@
+/// jwt
 use chrono::prelude::*;
 use chrono::Duration;
 use jsonwebtoken::{Header, EncodingKey, DecodingKey};
@@ -14,18 +15,21 @@ pub struct TokenClaims {
     pub exp: i64,
 }
 
+/// 加密密码
 pub fn hash_password(password: &str) -> anyhow::Result<String> {
     let salt = generate_random_salt();
     let hash = argon2::hash_encoded(password.as_bytes(), &salt, &argon2::Config::default())?;
     Ok(hash)
 }
 
+/// 生成密码salt
 fn generate_random_salt() -> [u8; 16] {
     let mut salt = [0; 16];
     thread_rng().fill_bytes(&mut salt);
     salt
 }
 
+/// 生成token
 pub fn generate_token(user_id: i32) -> anyhow::Result<String> {
     let exp = Local::now() + Duration::hours(24);
     let token = jsonwebtoken::encode(
@@ -39,6 +43,7 @@ pub fn generate_token(user_id: i32) -> anyhow::Result<String> {
     Ok(token)
 }
 
+/// 提取token中用户信息
 pub fn extract_token(req: &HttpRequest) -> Option<&str> {
     if let Some(header) = req.headers().get(constants::AUTHORIZATION) {
         if let Ok(authorization) = header.to_str() {
@@ -48,6 +53,7 @@ pub fn extract_token(req: &HttpRequest) -> Option<&str> {
     None
 }
 
+/// 编码token
 pub fn decode_token(token: &str) -> anyhow::Result<i32> {
     let data = jsonwebtoken::decode::<TokenClaims>(
         token,

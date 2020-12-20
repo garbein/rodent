@@ -1,3 +1,4 @@
+/// 配置模型
 use crate::db::Pool;
 use crate::forms::site_setting_form;
 use chrono::prelude::*;
@@ -8,6 +9,7 @@ use sqlx::sqlite::SqliteQueryAs;
 #[cfg(feature = "mysql")]
 use sqlx::mysql::MySqlQueryAs;
 
+/// 配置结构体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Setting {
     pub id: i32,
@@ -18,6 +20,7 @@ pub struct Setting {
     pub updated_at: String,
 }
 
+/// 获取列表
 pub async fn get_all(pool: &Pool, page: i32, size: i32) -> anyhow::Result<(i64, Vec<Setting>)> {
     let (total,):(i64,) = sqlx::query_as("select count(*) as total from site_setting where deleted = 0")
         .fetch_one(pool)
@@ -59,6 +62,7 @@ pub async fn get_all(pool: &Pool, page: i32, size: i32) -> anyhow::Result<(i64, 
     Ok((total as i64, list))
 }
 
+/// 创建
 pub async fn create(form: &site_setting_form::Form, pool: &Pool) -> anyhow::Result<i64> {
     let time = Local::now().timestamp();
     sqlx::query!(
@@ -77,6 +81,7 @@ pub async fn create(form: &site_setting_form::Form, pool: &Pool) -> anyhow::Resu
     Ok(last_id_rec.0 as i64)
 }
 
+/// 更新
 pub async fn update(
     id: i64,
     form: &site_setting_form::UpdateForm,
@@ -96,6 +101,7 @@ pub async fn update(
     Ok(true)
 }
 
+/// 删除
 pub async fn delete(id: i64, pool: &Pool) -> anyhow::Result<bool> {
     let time = Local::now().timestamp();
     sqlx::query!(
@@ -108,6 +114,7 @@ pub async fn delete(id: i64, pool: &Pool) -> anyhow::Result<bool> {
     Ok(true)
 }
 
+/// 通过id获取配置
 pub async fn get_by_id(id: i64, pool: &Pool) -> anyhow::Result<Setting> {
     let rec = sqlx::query!(r#"SELECT * from site_setting where id = ?"#, id as i64)
         .fetch_one(pool)
@@ -137,6 +144,7 @@ pub async fn get_by_id(id: i64, pool: &Pool) -> anyhow::Result<Setting> {
     Ok(s)
 }
 
+/// 通过id获取配置内容
 pub async fn get_content_by_id(id: i64, pool: &Pool) -> anyhow::Result<String> {
     let rec = sqlx::query!(r#"SELECT content from site_setting where id = ?"#, id)
         .fetch_one(pool)

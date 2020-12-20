@@ -6,6 +6,7 @@ use crate::utils::token_utils;
 use crate::validates::validate;
 use actix_web::{get, put, web, Error, HttpRequest, HttpResponse};
 
+/// 用户画像
 #[get("/user/profile")]
 pub async fn profile(pool: web::Data<Pool>, req: HttpRequest) -> Result<HttpResponse, Error> {
     let token = match token_utils::extract_token(&req) {
@@ -23,6 +24,7 @@ pub async fn profile(pool: web::Data<Pool>, req: HttpRequest) -> Result<HttpResp
     }
 }
 
+/// 更新用户名
 #[put("/user/update_username")]
 pub async fn update_username(
     pool: web::Data<Pool>,
@@ -36,6 +38,7 @@ pub async fn update_username(
     }
 }
 
+/// 更新用户头像
 #[put("/user/update_avatar")]
 pub async fn update_avatar(
     pool: web::Data<Pool>,

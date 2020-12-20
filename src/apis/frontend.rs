@@ -10,6 +10,7 @@ pub struct DetailPath {
     id: i64,
 }
 
+/// 配置详情
 #[get("/frontend/{id}")]
 pub async fn detail(
     pool: web::Data<Pool>,

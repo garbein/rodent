@@ -24,6 +24,7 @@ pub struct LoginRes {
     pub user: UserRes,
 }
 
+/// 注册
 pub async fn register(pool: &web::Data<Pool>, form: &RegisterForm) -> anyhow::Result<LoginRes> {
     let user_exist = user::get_by_email(&pool, &form.email).await;
     if user_exist.is_ok() {
@@ -50,6 +51,7 @@ pub async fn register(pool: &web::Data<Pool>, form: &RegisterForm) -> anyhow::Re
     Ok(res)
 }
 
+/// 登录
 pub async fn login(pool: &web::Data<Pool>, form: &LoginForm) -> anyhow::Result<LoginRes> {
     let user_exist = user::get_by_email(&pool, &form.email).await;
     let u;
@@ -57,6 +59,7 @@ pub async fn login(pool: &web::Data<Pool>, form: &LoginForm) -> anyhow::Result<L
         Ok(t) => u = t,
         Err(_) => return Err(anyhow::anyhow!("user not exist")),
     };
+    // 核验密码
     let valid = argon2::verify_encoded(&u.password, &form.password.as_bytes())?;
     if !valid {
         return Err(anyhow::anyhow!("password error"));
@@ -68,6 +71,7 @@ pub async fn login(pool: &web::Data<Pool>, form: &LoginForm) -> anyhow::Result<L
         role: String::from("user"),
         verified: true,
     };
+    // 生成jwt token
     let token = generate_token(u.id)?;
     let res = LoginRes {
         token: token,
@@ -76,6 +80,7 @@ pub async fn login(pool: &web::Data<Pool>, form: &LoginForm) -> anyhow::Result<L
     Ok(res)
 }
 
+/// 用户信息
 pub async fn get_profile(pool: &web::Data<Pool>, user_id: i32) -> anyhow::Result<UserRes> {
     let u = user::get_by_id(&pool, user_id).await?;
     let user_res = UserRes {
@@ -88,6 +93,7 @@ pub async fn get_profile(pool: &web::Data<Pool>, user_id: i32) -> anyhow::Result
     Ok(user_res)
 }
 
+/// 用户改名
 pub async fn update_username(
     pool: &web::Data<Pool>,
     form: &user_form::UpdateUsernameForm,
@@ -96,6 +102,7 @@ pub async fn update_username(
     Ok(true)
 }
 
+/// 换头像
 pub async fn update_avatar(
     pool: &web::Data<Pool>,
     form: &user_form::UpdateAvatarForm,
