@@ -2,7 +2,7 @@
 
 ## Demo
 
-- [http://rodent.cloudci.com/](http://rodent.cloudci.com/)
+- [http://rodent.cloudci.com/configuration](http://rodent.cloudci.com/configuration)
 
 ## Installation
 
