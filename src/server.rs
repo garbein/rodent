@@ -23,6 +23,7 @@ pub async fn init_server() -> std::io::Result<()> {
             .wrap(
                 Cors::default()
                     .send_wildcard()
+                    .allow_any_origin()
             )
             .data(pool.clone())
             .configure(cache::init_cache)
