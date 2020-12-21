@@ -2,7 +2,7 @@
 
 ## Demo
 
-- [http://49.232.102.172/](http://49.232.102.172/)
+- [http://rodent.cloudci.com/](http://rodent.cloudci.com/)
 
 ## Installation
 
