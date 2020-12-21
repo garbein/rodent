@@ -58,7 +58,6 @@ pub async fn get_all(pool: &Pool, page: i32, size: i32) -> anyhow::Result<(i64, 
         };
         list.push(s);
     }
-    println!("{:?}", list);
     Ok((total as i64, list))
 }
 
@@ -75,7 +74,17 @@ pub async fn create(form: &site_setting_form::Form, pool: &Pool) -> anyhow::Resu
     )
     .execute(pool)
     .await?;
-    let last_id_rec: (i64,) = sqlx::query_as("SELECT last_insert_rowid()")
+
+    #[cfg(feature = "sqlite")]
+    type LastInsertType = i64;
+    #[cfg(feature = "sqlite")]
+    let sql = "SELECT last_insert_rowid()";
+    #[cfg(feature = "mysql")]
+    type LastInsertType = u64;
+    #[cfg(feature = "mysql")]
+    let sql = "SELECT last_insert_id()";
+
+    let last_id_rec: (LastInsertType,) = sqlx::query_as(sql)
         .fetch_one(pool)
         .await?;
     Ok(last_id_rec.0 as i64)

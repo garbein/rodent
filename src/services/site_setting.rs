@@ -66,7 +66,7 @@ pub async fn detail(
     let setting = site_setting::get_content_by_id(id, &pool).await?;
     if setting.len() > 0 {
         let _ = cache::set(&c, &key, &setting).await;
-        let _ = cache::expire(&c, &key, "86400").await;
+        //let _ = cache::expire(&c, &key, "86400").await;
         handle_setting(&setting)
     } else {
         Err(anyhow::anyhow!("not found"))

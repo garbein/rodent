@@ -21,9 +21,8 @@ pub async fn init_server() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .wrap(
-                Cors::new()
+                Cors::default()
                     .send_wildcard()
-                    .finish()
             )
             .data(pool.clone())
             .configure(cache::init_cache)

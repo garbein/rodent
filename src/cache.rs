@@ -7,25 +7,25 @@ pub type Client = Data<Addr<RedisActor>>;
 
 #[allow(dead_code)]
 pub async fn expire(client: &Client, key: &str, seconds: &str) -> Result<String, String> {
-    let command = resp_array!["EXPIRE", key, seconds];
+    let command = resp_array!["expire", key, seconds];
     self::send(client, command).await
 }
 
 #[allow(dead_code)]
 pub async fn get(client: &Client, key: &str) -> Result<String, String> {
-    let command = resp_array!["GET", key];
+    let command = resp_array!["get", key];
     self::send(client, command).await
 }
 
 #[allow(dead_code)]
 pub async fn set(client: &Client, key: &str, value: &str) -> Result<String, String> {
-    let command = resp_array!["SET", key, value];
+    let command = resp_array!["set", key, value];
     self::send(client, command).await
 }
 
 #[allow(dead_code)]
 pub async fn del(client: &Client, key: &str) -> Result<String, String> {
-    let command = resp_array!["DEL", key];
+    let command = resp_array!["del", key];
     self::send(client, command).await
 }
 
